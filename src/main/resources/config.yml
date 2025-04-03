@@ -7,6 +7,6 @@ respawn_points:
     respawn_2: { x: -3956, y: 90, z: -9410 }
     respawn_3: { x: -3957, y: 96, z: -9329 }
     respawn_4: { x: -4051, y: 75, z: -9319 }
-    respawn_5: { x: -3987, y: 96, z: -3960 }
+    respawn_5: { x: -3987, y: 96, z: -9360 }
 
 respawn_height: 35
