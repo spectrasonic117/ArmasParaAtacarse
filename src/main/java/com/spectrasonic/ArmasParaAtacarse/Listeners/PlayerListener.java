@@ -1,7 +1,6 @@
 package com.spectrasonic.ArmasParaAtacarse.Listeners;
 
 import com.spectrasonic.ArmasParaAtacarse.Main;
-import com.spectrasonic.ArmasParaAtacarse.Utils.ItemBuilder;
 import com.spectrasonic.ArmasParaAtacarse.Utils.MessageUtils;
 import com.spectrasonic.ArmasParaAtacarse.Utils.SoundUtils;
 import org.bukkit.Bukkit;
@@ -47,7 +46,7 @@ public class PlayerListener implements Listener {
                 long currentTime = System.currentTimeMillis();
                 if (cooldowns.containsKey(player.getUniqueId())) {
                     long lastShot = cooldowns.get(player.getUniqueId());
-                    long elapsedTicks = (currentTime - lastShot) / 50; 
+                    long elapsedTicks = (currentTime - lastShot) / 50;
 
                     if (elapsedTicks < COOLDOWN_TICKS) {
                         MessageUtils.sendActionBar(player, "<red><b>Arma Recargando");
@@ -58,20 +57,29 @@ public class PlayerListener implements Listener {
                 // Update cooldown
                 cooldowns.put(player.getUniqueId(), currentTime);
 
-                // Existing shooting logic
+                // Modified shooting logic - single straight line of flame particles
                 Location start = player.getEyeLocation();
                 Vector direction = start.getDirection().normalize();
-                Location end = start.clone().add(direction.multiply(25));
+                Location end = start.clone().add(direction.multiply(20)); // 20 bloques de distancia
 
-                for (double i = 0; i < 25; i += 0.5) {
+                // Draw a perfectly straight line of flame particles
+                for (double i = 0; i <= 20; i += 0.1) {
                     Location particleLocation = start.clone().add(direction.clone().multiply(i));
-                    player.getWorld().spawnParticle(Particle.FLAME, particleLocation, 1);
+                    player.getWorld().spawnParticle(
+                            Particle.FLAME,
+                            particleLocation,
+                            1, // count
+                            0, // offset X (0 = no spread)
+                            0, // offset Y (0 = no spread)
+                            0, // offset Z (0 = no spread)
+                            0 // extra/speed (0 = no randomness)
+                    );
                 }
 
                 Player target = getTargetPlayer(player, end);
                 if (target != null) {
                     teleportToRespawn(target);
-                    SoundUtils.playerSound(target, org.bukkit.Sound.ENTITY_ENDERMAN_TELEPORT, 1.0f, 1.0f);
+                    SoundUtils.playerSound(target, org.bukkit.Sound.ENTITY_ENDERMAN_TELEPORT, 0.7f, 1.0f);
                 }
             }
         }
@@ -85,7 +93,7 @@ public class PlayerListener implements Listener {
             SoundUtils.playerSound(player, org.bukkit.Sound.ENTITY_ENDERMAN_TELEPORT, 1.0f, 1.0f);
         }
 
-        Block block = player.getLocation().getBlock().getRelative(0, -1, 0);
+        Block block = player.getLocation().getBlock().getRelative(0, 0, 0);
         if (block.getType() == Material.LIGHT_WEIGHTED_PRESSURE_PLATE) {
             player.setVelocity(player.getVelocity().setY(plugin.getConfigManager().getJumpPlatform().getJump()));
             player.setVelocity(player.getVelocity().add(player.getLocation().getDirection()
