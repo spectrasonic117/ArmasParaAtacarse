@@ -1,0 +1,26 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "type": "gradle",
+            "id": "/Users/spectra/Desktop/ArmasParaAtacarsebuildArmasParaAtacarse",
+            "script": "build",
+            "description": "Assembles and tests this project.",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "project": "ArmasParaAtacarse",
+            "buildFile": "/Users/spectra/Desktop/ArmasParaAtacarse/build.gradle",
+            "rootProject": "ArmasParaAtacarse",
+            "projectFolder": "/Users/spectra/Desktop/ArmasParaAtacarse",
+            "workspaceFolder": "/Users/spectra/Desktop/ArmasParaAtacarse",
+            "args": "",
+            "javaDebug": false,
+            "problemMatcher": [
+                "$gradle"
+            ],
+            "label": "gradle: build"
+        }
+    ]
+}
