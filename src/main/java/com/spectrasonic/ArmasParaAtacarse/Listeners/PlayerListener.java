@@ -134,7 +134,7 @@ public class PlayerListener implements Listener {
         Location respawnPoint = respawnPoints.get(random.nextInt(respawnPoints.size()));
 
         // Show DNA helix effect at destination before teleporting
-        TeleportEffectUtils.createDNAHelix(plugin, respawnPoint, 3.0, 20);
+        TeleportEffectUtils.createDNAHelix(plugin, respawnPoint, 3.0, 10);
 
         player.teleport(respawnPoint);
     }

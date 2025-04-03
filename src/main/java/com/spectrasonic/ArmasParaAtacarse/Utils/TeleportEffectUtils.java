@@ -81,7 +81,7 @@ public final class TeleportEffectUtils {
 
         // Add a few smaller particles around the main one to create a thicker strand
         for (int i = 0; i < 2; i++) {
-            double smallOffset = 0.1;
+            double smallOffset = 0.05;
             world.spawnParticle(
                     particle,
                     center.getX() + x + (Math.random() * smallOffset - smallOffset / 2),
