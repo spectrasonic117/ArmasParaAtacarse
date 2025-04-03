@@ -99,6 +99,8 @@ public class PlayerListener implements Listener {
     public void onPlayerMove(PlayerMoveEvent event) {
         Player player = event.getPlayer();
         if (player.getLocation().getY() <= plugin.getConfigManager().getRespawnHeight()) {
+            pointsManager.subtractPoints(player, 3);
+            MessageUtils.sendActionBar(player, "<red><b>-3 Puntos");
             teleportToRespawn(player);
             SoundUtils.playerSound(player, org.bukkit.Sound.ENTITY_ENDERMAN_TELEPORT, 1.0f, 1.0f);
         }
