@@ -6,18 +6,20 @@ import com.spectrasonic.ArmasParaAtacarse.Commands.ReloadCommand;
 import com.spectrasonic.ArmasParaAtacarse.Config.ConfigManager;
 import com.spectrasonic.ArmasParaAtacarse.Listeners.PlayerListener;
 import com.spectrasonic.ArmasParaAtacarse.Utils.MessageUtils;
+import com.spectrasonic.ArmasParaAtacarse.Utils.PointsManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class Main extends JavaPlugin {
-
     private ConfigManager configManager;
     private PaperCommandManager commandManager;
+    private PointsManager pointsManager;
 
     @Override
     public void onEnable() {
         saveDefaultConfig();
         configManager = new ConfigManager(this);
         configManager.loadConfig();
+        pointsManager = new PointsManager(this);
 
         registerCommands();
         registerEvents();
@@ -41,5 +43,9 @@ public final class Main extends JavaPlugin {
 
     public ConfigManager getConfigManager() {
         return configManager;
+    }
+
+    public PointsManager getPointsManager() {
+        return pointsManager;
     }
 }

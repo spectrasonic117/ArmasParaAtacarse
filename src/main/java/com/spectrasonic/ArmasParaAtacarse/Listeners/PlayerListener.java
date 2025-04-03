@@ -2,6 +2,7 @@ package com.spectrasonic.ArmasParaAtacarse.Listeners;
 
 import com.spectrasonic.ArmasParaAtacarse.Main;
 import com.spectrasonic.ArmasParaAtacarse.Utils.MessageUtils;
+import com.spectrasonic.ArmasParaAtacarse.Utils.PointsManager;
 import com.spectrasonic.ArmasParaAtacarse.Utils.SoundUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -26,12 +27,14 @@ import java.util.Random;
 public class PlayerListener implements Listener {
 
     private final Main plugin;
+    private final PointsManager pointsManager;
     private final Random random = new Random();
     private final Map<UUID, Long> cooldowns = new HashMap<>();
     private static final long COOLDOWN_TICKS = 10; // 10 ticks = 0.5 seconds
 
     public PlayerListener(Main plugin) {
         this.plugin = plugin;
+        this.pointsManager = new PointsManager(plugin);
     }
 
     @EventHandler
@@ -78,6 +81,13 @@ public class PlayerListener implements Listener {
 
                 Player target = getTargetPlayer(player, end);
                 if (target != null) {
+
+                    pointsManager.addPoints(player, 1);
+                    MessageUtils.sendActionBar(player, "<green><b>+1 Punto");
+
+                    pointsManager.subtractPoints(target, 3);
+                    MessageUtils.sendActionBar(target, "<red><b>-3 Puntos");
+
                     teleportToRespawn(target);
                     SoundUtils.playerSound(target, org.bukkit.Sound.ENTITY_ENDERMAN_TELEPORT, 0.7f, 1.0f);
                 }
@@ -88,7 +98,7 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent event) {
         Player player = event.getPlayer();
-        if (player.getLocation().getY() < plugin.getConfigManager().getRespawnHeight()) {
+        if (player.getLocation().getY() <= plugin.getConfigManager().getRespawnHeight()) {
             teleportToRespawn(player);
             SoundUtils.playerSound(player, org.bukkit.Sound.ENTITY_ENDERMAN_TELEPORT, 1.0f, 1.0f);
         }
