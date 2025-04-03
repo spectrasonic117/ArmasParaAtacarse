@@ -105,9 +105,15 @@ public class PlayerListener implements Listener {
 
         Block block = player.getLocation().getBlock().getRelative(0, 0, 0);
         if (block.getType() == Material.LIGHT_WEIGHTED_PRESSURE_PLATE) {
-            player.setVelocity(player.getVelocity().setY(plugin.getConfigManager().getJumpPlatform().getJump()));
-            player.setVelocity(player.getVelocity().add(player.getLocation().getDirection()
-                    .multiply(plugin.getConfigManager().getJumpPlatform().getDash())));
+            // Get direction vector and normalize it
+            Vector direction = player.getLocation().getDirection().normalize();
+            
+            // Apply jump (vertical) and dash (horizontal) forces
+            direction.setY(direction.getY() + plugin.getConfigManager().getJumpPlatform().getJump());
+            direction.multiply(plugin.getConfigManager().getJumpPlatform().getDash());
+            
+            // Set the combined velocity
+            player.setVelocity(direction);
         }
     }
 
