@@ -4,6 +4,7 @@ import com.spectrasonic.ArmasParaAtacarse.Main;
 import com.spectrasonic.ArmasParaAtacarse.Utils.MessageUtils;
 import com.spectrasonic.ArmasParaAtacarse.Utils.PointsManager;
 import com.spectrasonic.ArmasParaAtacarse.Utils.SoundUtils;
+import com.spectrasonic.ArmasParaAtacarse.Utils.TeleportEffectUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -109,11 +110,11 @@ public class PlayerListener implements Listener {
         if (block.getType() == Material.LIGHT_WEIGHTED_PRESSURE_PLATE) {
             // Get direction vector and normalize it
             Vector direction = player.getLocation().getDirection().normalize();
-            
+
             // Apply jump (vertical) and dash (horizontal) forces
             direction.setY(direction.getY() + plugin.getConfigManager().getJumpPlatform().getJump());
             direction.multiply(plugin.getConfigManager().getJumpPlatform().getDash());
-            
+
             // Set the combined velocity
             player.setVelocity(direction);
         }
@@ -131,6 +132,10 @@ public class PlayerListener implements Listener {
     private void teleportToRespawn(Player player) {
         List<Location> respawnPoints = plugin.getConfigManager().getRespawnPoints();
         Location respawnPoint = respawnPoints.get(random.nextInt(respawnPoints.size()));
+
+        // Show DNA helix effect at destination before teleporting
+        TeleportEffectUtils.createDNAHelix(plugin, respawnPoint, 3.0, 20);
+
         player.teleport(respawnPoint);
     }
 }
