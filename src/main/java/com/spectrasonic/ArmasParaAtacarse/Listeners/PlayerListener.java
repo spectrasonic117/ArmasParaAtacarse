@@ -67,10 +67,10 @@ public class PlayerListener implements Listener {
                 Location end = start.clone().add(direction.multiply(20)); // 20 bloques de distancia
 
                 // Draw a perfectly straight line of flame particles
-                for (double i = 0; i <= 20; i += 0.1) {
+                for (double i = 0; i <= 20; i += 0.01) {
                     Location particleLocation = start.clone().add(direction.clone().multiply(i));
                     player.getWorld().spawnParticle(
-                            Particle.FLAME,
+                            Particle.END_ROD,
                             particleLocation,
                             1, // count
                             0, // offset X (0 = no spread)
