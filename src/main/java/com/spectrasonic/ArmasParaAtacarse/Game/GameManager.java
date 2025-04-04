@@ -19,6 +19,7 @@ public class GameManager {
         gameRunning = true;
         for (Player player : Bukkit.getOnlinePlayers()) {
             giveWeapon(player);
+            player.playSound(player.getLocation(), "minecraft:laser_gun", 1.0f, 1.0f);
         }
     }
 

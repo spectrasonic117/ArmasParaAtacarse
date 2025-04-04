@@ -46,6 +46,7 @@ public class PlayerListener implements Listener {
         if (item.getType() == Material.PAPER && item.getItemMeta().hasCustomModelData()
                 && item.getItemMeta().getCustomModelData() == 999) {
             if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+                player.playSound(player.getLocation(), "minecraft:laser_shoot", 1.0f, 1.0f);
                 // Check cooldown
                 long currentTime = System.currentTimeMillis();
                 if (cooldowns.containsKey(player.getUniqueId())) {
