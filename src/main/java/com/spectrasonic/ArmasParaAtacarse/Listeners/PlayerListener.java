@@ -5,6 +5,7 @@ import com.spectrasonic.ArmasParaAtacarse.Utils.MessageUtils;
 import com.spectrasonic.ArmasParaAtacarse.Utils.PointsManager;
 import com.spectrasonic.ArmasParaAtacarse.Utils.SoundUtils;
 import com.spectrasonic.ArmasParaAtacarse.Utils.TeleportEffectUtils;
+import com.spectrasonic.ArmasParaAtacarse.Game.GameManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -29,24 +30,30 @@ public class PlayerListener implements Listener {
 
     private final Main plugin;
     private final PointsManager pointsManager;
+    private final GameManager gameManager;
     private final Random random = new Random();
     private final Map<UUID, Long> cooldowns = new HashMap<>();
     private static final long COOLDOWN_TICKS = 10; // 10 ticks = 0.5 seconds
 
-    public PlayerListener(Main plugin) {
+    public PlayerListener(Main plugin, GameManager gameManager) {
         this.plugin = plugin;
         this.pointsManager = new PointsManager(plugin);
+        this.gameManager = gameManager;
     }
 
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
+        // Check if game is running before processing weapon interactions
+        if (!gameManager.isGameRunning()) {
+            return;
+        }
+
         Player player = event.getPlayer();
         ItemStack item = player.getInventory().getItemInMainHand();
 
         if (item.getType() == Material.PAPER && item.getItemMeta().hasCustomModelData()
                 && item.getItemMeta().getCustomModelData() == 999) {
             if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-                player.playSound(player.getLocation(), "minecraft:laser_shoot", 1.0f, 1.0f);
                 // Check cooldown
                 long currentTime = System.currentTimeMillis();
                 if (cooldowns.containsKey(player.getUniqueId())) {
@@ -61,6 +68,9 @@ public class PlayerListener implements Listener {
 
                 // Update cooldown
                 cooldowns.put(player.getUniqueId(), currentTime);
+
+                // Play sound only after cooldown check passes
+                player.playSound(player.getLocation(), "minecraft:laser_shoot", 1.0f, 1.0f);
 
                 // Modified shooting logic - single straight line of flame particles
                 Location start = player.getEyeLocation();
@@ -99,6 +109,11 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent event) {
+        // Check if game is running before processing movement mechanics
+        if (!gameManager.isGameRunning()) {
+            return;
+        }
+
         Player player = event.getPlayer();
         if (player.getLocation().getY() <= plugin.getConfigManager().getRespawnHeight()) {
             pointsManager.subtractPoints(player, 3);

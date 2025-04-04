@@ -14,9 +14,9 @@ public class GameCommand extends BaseCommand {
     private final Main plugin;
     private final GameManager gameManager;
 
-    public GameCommand(Main plugin) {
+    public GameCommand(Main plugin, GameManager gameManager) {
         this.plugin = plugin;
-        this.gameManager = new GameManager(plugin);
+        this.gameManager = gameManager;
     }
 
     @Subcommand("game start")
