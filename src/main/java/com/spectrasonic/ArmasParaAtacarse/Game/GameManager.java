@@ -5,6 +5,8 @@ import com.spectrasonic.ArmasParaAtacarse.Utils.ItemBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 public class GameManager {
 
@@ -20,6 +22,8 @@ public class GameManager {
         for (Player player : Bukkit.getOnlinePlayers()) {
             giveWeapon(player);
             player.playSound(player.getLocation(), "minecraft:laser_gun", 1.0f, 1.0f);
+            // Apply SPEED 3 effect indefinitely
+            player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 3, true, false));
         }
     }
 
@@ -27,6 +31,8 @@ public class GameManager {
         gameRunning = false;
         for (Player player : Bukkit.getOnlinePlayers()) {
             player.getInventory().clear();
+            // Remove SPEED effect
+            player.removePotionEffect(PotionEffectType.SPEED);
         }
     }
 
