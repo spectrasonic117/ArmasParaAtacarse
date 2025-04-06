@@ -9,6 +9,7 @@ import com.spectrasonic.ArmasParaAtacarse.Game.GameManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.GameMode;
 import org.bukkit.Particle;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -115,6 +116,11 @@ public class PlayerListener implements Listener {
         }
 
         Player player = event.getPlayer();
+
+        if (player.getGameMode() != GameMode.ADVENTURE) {
+            return; // No hacer nada si no está en modo AVENTURE
+        }
+
         if (player.getLocation().getY() <= plugin.getConfigManager().getRespawnHeight()) {
             pointsManager.subtractPoints(player, 3);
             MessageUtils.sendActionBar(player, "<red><b>-3 Puntos");

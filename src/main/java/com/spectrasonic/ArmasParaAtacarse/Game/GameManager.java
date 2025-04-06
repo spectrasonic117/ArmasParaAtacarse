@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.GameMode;
 
 public class GameManager {
 
@@ -20,19 +21,21 @@ public class GameManager {
     public void startGame() {
         gameRunning = true;
         for (Player player : Bukkit.getOnlinePlayers()) {
-            giveWeapon(player);
             player.playSound(player.getLocation(), "minecraft:laser_gun", 1.0f, 1.0f);
-            // Apply SPEED 3 effect indefinitely
-            player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 3, true, false));
+            if (player.getGameMode() == GameMode.ADVENTURE) {
+                giveWeapon(player);
+                player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 3, true, false));
+            }
         }
     }
 
     public void stopGame() {
         gameRunning = false;
         for (Player player : Bukkit.getOnlinePlayers()) {
-            player.getInventory().clear();
-            // Remove SPEED effect
-            player.removePotionEffect(PotionEffectType.SPEED);
+            if (player.getGameMode() == GameMode.ADVENTURE) {
+                player.getInventory().clear();
+                player.removePotionEffect(PotionEffectType.SPEED);
+            }
         }
     }
 
