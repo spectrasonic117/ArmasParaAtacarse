@@ -8,6 +8,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.GameMode;
+import org.bukkit.configuration.file.FileConfiguration;
 
 public class GameManager {
 
@@ -20,11 +21,15 @@ public class GameManager {
 
     public void startGame() {
         gameRunning = true;
+        FileConfiguration config = plugin.getConfig();
+        int speedLevel = config.getInt("speed_level", 7);
+        int amplifier = Math.max(0, speedLevel - 1);
+
         for (Player player : Bukkit.getOnlinePlayers()) {
             player.playSound(player.getLocation(), "minecraft:laser_gun", 1.0f, 1.0f);
             if (player.getGameMode() == GameMode.ADVENTURE) {
                 giveWeapon(player);
-                player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 3, true, false));
+                player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, amplifier, true, false));
             }
         }
     }

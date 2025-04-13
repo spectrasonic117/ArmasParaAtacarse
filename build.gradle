@@ -49,7 +49,7 @@ shadowJar {
     relocate "co.aikar.commands", "com.spectrasonic.ArmasParaAtacarse.acf"
     relocate "co.aikar.locales", "com.spectrasonic.ArmasParaAtacarse.locales"
     destinationDirectory = file("${rootDir}/out")
-    archiveFileName = "${rootProject.name}-${version}.jar" 
+    archiveFileName = "Spectra-${rootProject.name}-${version}.jar" 
 }
 
 build.dependsOn shadowJar

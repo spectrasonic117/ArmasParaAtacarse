@@ -1,6 +1,8 @@
 jump_platform:
-    jump: 3
-    dash: 3
+    jump: 1.7
+    dash: 1.7
+
+speed_level: 7
 
 respawn_points:
     respawn_1: { x: -4048, y: 84, z: -9428 }
