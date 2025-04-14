@@ -12,6 +12,7 @@ import org.bukkit.Material;
 import org.bukkit.GameMode;
 import org.bukkit.Particle;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -23,7 +24,6 @@ import org.bukkit.util.Vector;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-
 import java.util.List;
 import java.util.Random;
 
@@ -34,7 +34,8 @@ public class PlayerListener implements Listener {
     private final GameManager gameManager;
     private final Random random = new Random();
     private final Map<UUID, Long> cooldowns = new HashMap<>();
-    private static final long COOLDOWN_TICKS = 10; // 10 ticks = 0.5 seconds
+    private static final long COOLDOWN_TICKS = 10; // 10 ticks = 0.5 segundos
+    private static final double MAX_DISTANCE = 50.0; // Distancia máxima para el raytracing
 
     public PlayerListener(Main plugin, GameManager gameManager) {
         this.plugin = plugin;
@@ -44,7 +45,7 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
-        // Check if game is running before processing weapon interactions
+        // Verificar si el juego está en ejecución antes de procesar interacciones con armas
         if (!gameManager.isGameRunning()) {
             return;
         }
@@ -55,7 +56,7 @@ public class PlayerListener implements Listener {
         if (item.getType() == Material.PAPER && item.getItemMeta().hasCustomModelData()
                 && item.getItemMeta().getCustomModelData() == 999) {
             if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-                // Check cooldown
+                // Verificar cooldown
                 long currentTime = System.currentTimeMillis();
                 if (cooldowns.containsKey(player.getUniqueId())) {
                     long lastShot = cooldowns.get(player.getUniqueId());
@@ -67,19 +68,27 @@ public class PlayerListener implements Listener {
                     }
                 }
 
-                // Update cooldown
+                // Actualizar cooldown
                 cooldowns.put(player.getUniqueId(), currentTime);
 
-                // Play sound only after cooldown check passes
+                // Reproducir sonido solo después de que pase la verificación de cooldown
                 player.playSound(player.getLocation(), "minecraft:laser_shoot", 1.0f, 1.0f);
 
-                // Modified shooting logic - single straight line of flame particles
+                // Obtener el jugador objetivo usando raytracing
+                Player target = getTargetPlayerWithRaytracing(player, MAX_DISTANCE);
+                
+                // Lógica de disparo - línea recta de partículas
                 Location start = player.getEyeLocation();
                 Vector direction = start.getDirection().normalize();
-                Location end = start.clone().add(direction.multiply(20)); // 20 bloques de distancia
-
-                // Draw a perfectly straight line of flame particles
-                for (double i = 0; i <= 20; i += 0.01) {
+                
+                // Determinar la distancia final para las partículas
+                double particleDistance = MAX_DISTANCE;
+                if (target != null) {
+                    particleDistance = start.distance(target.getEyeLocation());
+                }
+                
+                // Dibujar una línea perfectamente recta de partículas
+                for (double i = 0; i <= particleDistance; i += 0.5) {
                     Location particleLocation = start.clone().add(direction.clone().multiply(i));
                     player.getWorld().spawnParticle(
                             Particle.END_ROD,
@@ -92,8 +101,13 @@ public class PlayerListener implements Listener {
                     );
                 }
 
-                Player target = getTargetPlayer(player, end);
                 if (target != null) {
+                    // Efecto de impacto en el objetivo
+                    target.getWorld().spawnParticle(
+                            Particle.PORTAL,
+                            target.getLocation().add(0, 1, 0),
+                            10, 0.5, 0.5, 0.5, 0.1
+                    );
 
                     pointsManager.addPoints(player, 1);
                     MessageUtils.sendActionBar(player, "<green><b>+1 Punto");
@@ -108,9 +122,63 @@ public class PlayerListener implements Listener {
         }
     }
 
+    /**
+     * Obtiene el jugador objetivo usando raytracing para una detección precisa
+     * @param shooter El jugador que dispara
+     * @param maxDistance La distancia máxima para buscar
+     * @return El jugador objetivo o null si no hay ninguno
+     */
+    private Player getTargetPlayerWithRaytracing(Player shooter, double maxDistance) {
+        Location eyeLocation = shooter.getEyeLocation();
+        Vector direction = eyeLocation.getDirection().normalize();
+        
+        // Verificar si hay jugadores en la línea de visión
+        for (double d = 0; d <= maxDistance; d += 0.5) {
+            Location checkLocation = eyeLocation.clone().add(direction.clone().multiply(d));
+            
+            // Verificar si hay un bloque sólido que bloquee la visión
+            if (checkLocation.getBlock().getType().isSolid()) {
+                return null;
+            }
+            
+            // Buscar jugadores cercanos a este punto
+            for (Entity entity : checkLocation.getWorld().getNearbyEntities(checkLocation, 1, 1, 1)) {
+                if (entity instanceof Player && entity != shooter) {
+                    Player target = (Player) entity;
+                    
+                    // Verificar si el jugador está en modo aventura (jugando)
+                    if (target.getGameMode() == GameMode.ADVENTURE) {
+                        // Verificar si la línea de visión pasa cerca de la cabeza del jugador
+                        if (isLookingAt(shooter, target)) {
+                            return target;
+                        }
+                    }
+                }
+            }
+        }
+        
+        return null;
+    }
+    
+    /**
+     * Verifica si un jugador está mirando a otro
+     * @param shooter El jugador que dispara
+     * @param target El jugador objetivo potencial
+     * @return true si el shooter está mirando al target
+     */
+    private boolean isLookingAt(Player shooter, Player target) {
+        Location eyeLocation = shooter.getEyeLocation();
+        Vector toTarget = target.getEyeLocation().toVector().subtract(eyeLocation.toVector());
+        double dot = toTarget.normalize().dot(eyeLocation.getDirection());
+        
+        // El valor de 0.98 representa aproximadamente un ángulo de 11 grados
+        // Puedes ajustar este valor para hacer la detección más o menos precisa
+        return dot > 0.98;
+    }
+
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent event) {
-        // Check if game is running before processing movement mechanics
+        // Verificar si el juego está en ejecución antes de procesar mecánicas de movimiento
         if (!gameManager.isGameRunning()) {
             return;
         }
@@ -130,32 +198,23 @@ public class PlayerListener implements Listener {
 
         Block block = player.getLocation().getBlock().getRelative(0, 0, 0);
         if (block.getType() == Material.LIGHT_WEIGHTED_PRESSURE_PLATE) {
-            // Get direction vector and normalize it
+            // Obtener vector de dirección y normalizarlo
             Vector direction = player.getLocation().getDirection().normalize();
 
-            // Apply jump (vertical) and dash (horizontal) forces
+            // Aplicar fuerzas de salto (vertical) y dash (horizontal)
             direction.setY(direction.getY() + plugin.getConfigManager().getJumpPlatform().getJump());
             direction.multiply(plugin.getConfigManager().getJumpPlatform().getDash());
 
-            // Set the combined velocity
+            // Establecer la velocidad combinada
             player.setVelocity(direction);
         }
-    }
-
-    private Player getTargetPlayer(Player shooter, Location end) {
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            if (player != shooter && player.getLocation().distance(end) < 1.5) {
-                return player;
-            }
-        }
-        return null;
     }
 
     private void teleportToRespawn(Player player) {
         List<Location> respawnPoints = plugin.getConfigManager().getRespawnPoints();
         Location respawnPoint = respawnPoints.get(random.nextInt(respawnPoints.size()));
 
-        // Show DNA helix effect at destination before teleporting
+        // Mostrar efecto de hélice de ADN en el destino antes de teletransportar
         TeleportEffectUtils.createDNAHelix(plugin, respawnPoint, 3.0, 10);
 
         player.teleport(respawnPoint);
