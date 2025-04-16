@@ -192,10 +192,12 @@ public class PlayerListener implements Listener {
         if (player.getLocation().getY() <= plugin.getConfigManager().getRespawnHeight()) {
             pointsManager.subtractPoints(player, 3);
             MessageUtils.sendActionBar(player, "<red><b>-3 Puntos");
-            teleportToRespawn(player);
+            // Ejecutar el comando externo para respawn
+            String command = "multiwarp tp 3_16 " + player.getName();
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
             SoundUtils.playerSound(player, org.bukkit.Sound.ENTITY_ENDERMAN_TELEPORT, 1.0f, 1.0f);
         }
-
+        
         Block block = player.getLocation().getBlock().getRelative(0, 0, 0);
         if (block.getType() == Material.LIGHT_WEIGHTED_PRESSURE_PLATE) {
             // Obtener vector de dirección y normalizarlo
@@ -211,12 +213,8 @@ public class PlayerListener implements Listener {
     }
 
     private void teleportToRespawn(Player player) {
-        List<Location> respawnPoints = plugin.getConfigManager().getRespawnPoints();
-        Location respawnPoint = respawnPoints.get(random.nextInt(respawnPoints.size()));
-
-        // Mostrar efecto de hélice de ADN en el destino antes de teletransportar
-        TeleportEffectUtils.createDNAHelix(plugin, respawnPoint, 3.0, 10);
-
-        player.teleport(respawnPoint);
+        // Ejecutar el comando de respawn externo
+        String command = "multiwarp tp 3_16 " + player.getName();
+        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
     }
 }

@@ -11,6 +11,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.GameMode;
+import org.bukkit.Bukkit;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,24 +48,8 @@ public class ShotEventListener implements Listener {
     }
 
     private void teleportToRespawn(Player player) {
-        FileConfiguration config = plugin.getConfig();
-        ConfigurationSection respawnSection = config.getConfigurationSection("respawn_points");
-
-        if (respawnSection == null || respawnSection.getKeys(false).isEmpty()) {
-            plugin.getLogger().warning("No se han definido puntos de respawn en config.yml");
-            return;
-        }
-
-        List<String> keys = new ArrayList<>(respawnSection.getKeys(false));
-        String randomKey = keys.get(random.nextInt(keys.size()));
-
-        double x = respawnSection.getDouble(randomKey + ".x");
-        double z = respawnSection.getDouble(randomKey + ".z");
-        double y = config.getDouble("respawn_height", respawnSection.getDouble(randomKey + ".y"));
-
-        World world = player.getWorld();
-        Location respawnLocation = new Location(world, x, y, z);
-
-        player.teleport(respawnLocation);
+        // Ejecutar el comando externo para respawn
+        String command = "multiwarp tp 3_16 " + player.getName();
+        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
     }
 }
