@@ -13,8 +13,8 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.GameMode;
 import org.bukkit.Bukkit;
 
-import java.util.ArrayList;
-import java.util.List;
+// import java.util.ArrayList;
+// import java.util.List;
 import java.util.Random;
 
 public class ShotEventListener implements Listener {

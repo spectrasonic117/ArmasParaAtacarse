@@ -4,7 +4,7 @@ import com.spectrasonic.ArmasParaAtacarse.Main;
 import com.spectrasonic.ArmasParaAtacarse.Utils.MessageUtils;
 import com.spectrasonic.ArmasParaAtacarse.Utils.PointsManager;
 import com.spectrasonic.ArmasParaAtacarse.Utils.SoundUtils;
-import com.spectrasonic.ArmasParaAtacarse.Utils.TeleportEffectUtils;
+// import com.spectrasonic.ArmasParaAtacarse.Utils.TeleportEffectUtils;
 import com.spectrasonic.ArmasParaAtacarse.Game.GameManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -24,7 +24,7 @@ import org.bukkit.util.Vector;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.List;
+// import java.util.List;
 import java.util.Random;
 
 public class PlayerListener implements Listener {
@@ -34,7 +34,7 @@ public class PlayerListener implements Listener {
     private final GameManager gameManager;
     private final Random random = new Random();
     private final Map<UUID, Long> cooldowns = new HashMap<>();
-    private static final long COOLDOWN_TICKS = 10; // 10 ticks = 0.5 segundos
+    private static final long COOLDOWN_TICKS = 25; // 10 ticks = 0.5 segundos
     private static final double MAX_DISTANCE = 50.0; // Distancia máxima para el raytracing
 
     public PlayerListener(Main plugin, GameManager gameManager) {
@@ -109,11 +109,11 @@ public class PlayerListener implements Listener {
                             10, 0.5, 0.5, 0.5, 0.1
                     );
 
-                    pointsManager.addPoints(player, 1);
-                    MessageUtils.sendActionBar(player, "<green><b>+1 Punto");
+                    pointsManager.addPoints(player, 2);
+                    MessageUtils.sendActionBar(player, "<green><b>+2 Puntos");
 
-                    pointsManager.subtractPoints(target, 3);
-                    MessageUtils.sendActionBar(target, "<red><b>-3 Puntos");
+                    pointsManager.subtractPoints(target, 1);
+                    MessageUtils.sendActionBar(target, "<red><b>-1 Punto");
 
                     teleportToRespawn(target);
                     SoundUtils.playerSound(target, org.bukkit.Sound.ENTITY_ENDERMAN_TELEPORT, 0.7f, 1.0f);
