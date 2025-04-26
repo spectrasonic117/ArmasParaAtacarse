@@ -2,6 +2,7 @@ package com.spectrasonic.ArmasParaAtacarse.Commands;
 
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.CommandAlias;
+import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Subcommand;
 import com.spectrasonic.ArmasParaAtacarse.Game.GameManager;
 import com.spectrasonic.ArmasParaAtacarse.Main;
@@ -9,6 +10,7 @@ import com.spectrasonic.ArmasParaAtacarse.Utils.MessageUtils;
 import org.bukkit.command.CommandSender;
 
 @CommandAlias("armaparaatacar|apa")
+@CommandPermission("apa.game")
 public class GameCommand extends BaseCommand {
 
     private final Main plugin;
