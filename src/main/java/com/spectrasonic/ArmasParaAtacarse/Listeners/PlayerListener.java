@@ -76,17 +76,17 @@ public class PlayerListener implements Listener {
 
                 // Obtener el jugador objetivo usando raytracing
                 Player target = getTargetPlayerWithRaytracing(player, MAX_DISTANCE);
-                
+
                 // Lógica de disparo - línea recta de partículas
                 Location start = player.getEyeLocation();
                 Vector direction = start.getDirection().normalize();
-                
+
                 // Determinar la distancia final para las partículas
                 double particleDistance = MAX_DISTANCE;
                 if (target != null) {
                     particleDistance = start.distance(target.getEyeLocation());
                 }
-                
+
                 // Dibujar una línea perfectamente recta de partículas
                 for (double i = 0; i <= particleDistance; i += 0.5) {
                     Location particleLocation = start.clone().add(direction.clone().multiply(i));
@@ -109,11 +109,16 @@ public class PlayerListener implements Listener {
                             10, 0.5, 0.5, 0.5, 0.1
                     );
 
-                    pointsManager.addPoints(player, 2);
-                    MessageUtils.sendActionBar(player, "<green><b>+2 Puntos");
+                    // Obtener puntos según la ronda actual
+                    int round = gameManager.getCurrentRound();
+                    int pointsToAdd = plugin.getConfigManager().getPointsToAdd(round);
+                    int pointsToSubtract = plugin.getConfigManager().getPointsToSubtract(round);
 
-                    pointsManager.subtractPoints(target, 1);
-                    MessageUtils.sendActionBar(target, "<red><b>-1 Punto");
+                    pointsManager.addPoints(player, pointsToAdd);
+                    MessageUtils.sendActionBar(player, String.format("<green><b>+" + pointsToAdd + " Puntos"));
+
+                    pointsManager.subtractPoints(target, pointsToSubtract);
+                    MessageUtils.sendActionBar(target, String.format("<red><b>" + pointsToSubtract + " Puntos"));
 
                     teleportToRespawn(target);
                     SoundUtils.playerSound(target, org.bukkit.Sound.ENTITY_ENDERMAN_TELEPORT, 0.7f, 1.0f);
@@ -131,21 +136,21 @@ public class PlayerListener implements Listener {
     private Player getTargetPlayerWithRaytracing(Player shooter, double maxDistance) {
         Location eyeLocation = shooter.getEyeLocation();
         Vector direction = eyeLocation.getDirection().normalize();
-        
+
         // Verificar si hay jugadores en la línea de visión
         for (double d = 0; d <= maxDistance; d += 0.5) {
             Location checkLocation = eyeLocation.clone().add(direction.clone().multiply(d));
-            
+
             // Verificar si hay un bloque sólido que bloquee la visión
             if (checkLocation.getBlock().getType().isSolid()) {
                 return null;
             }
-            
+
             // Buscar jugadores cercanos a este punto
             for (Entity entity : checkLocation.getWorld().getNearbyEntities(checkLocation, 1, 1, 1)) {
                 if (entity instanceof Player && entity != shooter) {
                     Player target = (Player) entity;
-                    
+
                     // Verificar si el jugador está en modo aventura (jugando)
                     if (target.getGameMode() == GameMode.ADVENTURE) {
                         // Verificar si la línea de visión pasa cerca de la cabeza del jugador
@@ -156,10 +161,10 @@ public class PlayerListener implements Listener {
                 }
             }
         }
-        
+
         return null;
     }
-    
+
     /**
      * Verifica si un jugador está mirando a otro
      * @param shooter El jugador que dispara
@@ -170,7 +175,7 @@ public class PlayerListener implements Listener {
         Location eyeLocation = shooter.getEyeLocation();
         Vector toTarget = target.getEyeLocation().toVector().subtract(eyeLocation.toVector());
         double dot = toTarget.normalize().dot(eyeLocation.getDirection());
-        
+
         // El valor de 0.98 representa aproximadamente un ángulo de 11 grados
         // Puedes ajustar este valor para hacer la detección más o menos precisa
         return dot > 0.98;
@@ -197,7 +202,7 @@ public class PlayerListener implements Listener {
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
             SoundUtils.playerSound(player, org.bukkit.Sound.ENTITY_ENDERMAN_TELEPORT, 1.0f, 1.0f);
         }
-        
+
         Block block = player.getLocation().getBlock().getRelative(0, 0, 0);
         if (block.getType() == Material.LIGHT_WEIGHTED_PRESSURE_PLATE) {
             // Obtener vector de dirección y normalizarlo

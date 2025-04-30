@@ -12,3 +12,13 @@ respawn_points:
     respawn_5: { x: -3987, y: 96, z: -9360 }
 
 respawn_height: 35
+
+add_points:
+    round_1: 10
+    round_2: 20
+    round_3: 30
+
+substract_points:
+    round_1: 5
+    round_2: 15
+    round_3: 25

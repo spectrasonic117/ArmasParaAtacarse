@@ -24,7 +24,7 @@ public class GameManager {
         if (round < 1 || round > 3) {
             throw new IllegalArgumentException("Round must be between 1 and 3");
         }
-        
+
         gameRunning = true;
         currentRound = round;
         FileConfiguration config = plugin.getConfig();

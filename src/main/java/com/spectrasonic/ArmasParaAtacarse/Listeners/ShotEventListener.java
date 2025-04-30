@@ -71,17 +71,17 @@ public class ShotEventListener implements Listener {
 
                 // Obtener el jugador objetivo usando raytracing
                 Player target = getTargetPlayerWithRaytracing(player, MAX_DISTANCE);
-                
+
                 // Lógica de disparo - línea recta de partículas
                 Location start = player.getEyeLocation();
                 Vector direction = start.getDirection().normalize();
-                
+
                 // Determinar la distancia final para las partículas
                 double particleDistance = MAX_DISTANCE;
                 if (target != null) {
                     particleDistance = start.distance(target.getEyeLocation());
                 }
-                
+
                 // Dibujar una línea perfectamente recta de partículas
                 for (double i = 0; i <= particleDistance; i += 0.5) {
                     Location particleLocation = start.clone().add(direction.clone().multiply(i));
