@@ -14,13 +14,19 @@ public class GameManager {
 
     private final Main plugin;
     private boolean gameRunning = false;
+    private int currentRound = 0;
 
     public GameManager(Main plugin) {
         this.plugin = plugin;
     }
 
-    public void startGame() {
+    public void startGame(int round) {
+        if (round < 1 || round > 3) {
+            throw new IllegalArgumentException("Round must be between 1 and 3");
+        }
+        
         gameRunning = true;
+        currentRound = round;
         FileConfiguration config = plugin.getConfig();
         int speedLevel = config.getInt("speed_level", 7);
         int amplifier = Math.max(0, speedLevel - 1);
@@ -36,6 +42,7 @@ public class GameManager {
 
     public void stopGame() {
         gameRunning = false;
+        currentRound = 0;
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (player.getGameMode() == GameMode.ADVENTURE) {
                 player.getInventory().clear();
@@ -46,6 +53,10 @@ public class GameManager {
 
     public boolean isGameRunning() {
         return gameRunning;
+    }
+
+    public int getCurrentRound() {
+        return currentRound;
     }
 
     private void giveWeapon(Player player) {

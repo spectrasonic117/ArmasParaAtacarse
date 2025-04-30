@@ -190,7 +190,7 @@ public class PlayerListener implements Listener {
         }
 
         if (player.getLocation().getY() <= plugin.getConfigManager().getRespawnHeight()) {
-            pointsManager.subtractPoints(player, 3);
+            pointsManager.subtractPoints(player, 50);
             MessageUtils.sendActionBar(player, "<red><b>-3 Puntos");
             // Ejecutar el comando externo para respawn
             String command = "multiwarp tp 3_16 " + player.getName();

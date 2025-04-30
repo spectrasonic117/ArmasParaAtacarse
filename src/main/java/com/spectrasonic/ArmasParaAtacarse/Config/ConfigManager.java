@@ -48,6 +48,14 @@ public class ConfigManager {
                 config.getDouble("jump_platform.dash"));
     }
 
+    public int getPointsToAdd(int round) {
+        return config.getInt("add_points.round_" + round);
+    }
+
+    public int getPointsToSubtract(int round) {
+        return config.getInt("subtract_points.round_" + round);
+    }
+
     public static class JumpPlatform {
         private final double jump;
         private final double dash;
